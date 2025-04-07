@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Unity Game Embedded in reVISit</title>
+  <script src="../../revisitUtilities/revisit-communicate.js"></script>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    iframe {
+      border: none;
+      width: 100%;
+      height: 100vh;
+    }
+  </style>
+</head>
+
+<body>
+  <iframe id="unity-iframe" src="Build/index.html" allow="fullscreen"></iframe>
+
+  <script>
+    const iframe = document.getElementById("unity-iframe");
+    let unityIsReady = false;
+    let configFromRevisit = null;
+
+    //Store config from reVISit (will contain 'parameters')
+    Revisit.onDataReceive((data) => {
+      console.log("[Wrapper] Received config from reVISit:", data);
+      configFromRevisit = data;
+
+      // If Unity is already ready, send it now
+      if (unityIsReady && configFromRevisit?.directionToSpawn !== undefined) {
+        sendDirectionToUnity(configFromRevisit.directionToSpawn);
+      }
+    });
+
+    //When Unity signals it's ready, send config if available
+    window.addEventListener("message", (event) => {
+      if (event.data?.type === "unity_ready") {
+        console.log("[Wrapper] Received 'unity_ready' from Unity");
+        unityIsReady = true;
+
+        if (configFromRevisit?.directionToSpawn !== undefined) {
+          sendDirectionToUnity(configFromRevisit.directionToSpawn);
+        }
+      }
+
+      //Handle message back from Unity
+      if (event.data?.type === "target_click") {
+        console.log("[Wrapper] Unity sent target click:", event.data.payload);
+
+        Revisit.postAnswers({
+          targetClickData: JSON.stringify(event.data.payload)
+        });
+      }
+    });
+
+    //Helper: Send spawn direction to Unity
+    function sendDirectionToUnity(direction) {
+      iframe.contentWindow.postMessage({
+        type: "SetSpawnDirection",
+        value: direction
+      }, "*");
+      console.log("[Wrapper] Sent spawn direction to Unity:", direction);
+    }
+  </script>
+  
+</body>
+
+</html>

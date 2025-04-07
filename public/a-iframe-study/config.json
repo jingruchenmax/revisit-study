@@ -1,0 +1,71 @@
+{
+    "$schema": "https://raw.githubusercontent.com/revisit-studies/study/v2.1.1/src/parser/StudyConfigSchema.json",
+    "studyMetadata": {
+      "title": "Passing data from reVISit to Unity WebGL build and back",
+      "version": "pilot",
+      "authors": [
+        "VIS Lab"
+      ],
+      "date": "2023-04-14",
+      "description": "A demo of how to pass data from reVISit to Unity WebGL build and send player interaction from Unity build back to the reVISit.",
+      "organizations": [
+        "WPI"
+      ]
+    },
+    "uiConfig": {
+      "contactEmail": "contact@revisit.dev",
+      "helpTextPath": "a-iframe-study/assets/help.md",
+      "logoPath": "revisitAssets/revisitLogoSquare.svg",
+      "withProgressBar": true,
+      "autoDownloadStudy": false,
+      "autoDownloadTime": 5000,
+      "sidebar": false
+    },
+    "baseComponents": {
+        "unity-game": {
+          "type": "website",
+          "response": [
+            {
+              "id": "targetClickData",
+              "prompt": "Data from Unity target click",
+              "location": "belowStimulus",
+              "type": "reactive"
+            }
+          ],
+          "path": "a-iframe-study/assets/revisit-wrapper.html",
+          "instructionLocation": "aboveStimulus"
+        }
+      },
+    "components": {
+      "introduction": {
+        "type": "markdown",
+        "path": "a-iframe-study/assets/introduction.md",
+        "response": []
+      },
+      "unity-task-1": {
+        "baseComponent": "unity-game",
+        "description": "Task 1: Spawn targets in forward order",
+        "instruction": "Click on targets as they appear.",
+        "parameters": {
+          "directionToSpawn": 1
+        }
+      },
+      "unity-task-2": {
+        "baseComponent": "unity-game",
+        "description": "Task 2: Spawn targets in reverse order",
+        "instruction": "Click on targets as they appear.",
+        "parameters": {
+          "directionToSpawn": 2
+        }
+      }
+    },
+    "sequence": {
+        "order": "fixed",
+        "components": [
+          "introduction",
+          "unity-task-1",
+          "unity-task-2"
+        ]
+      }
+  }
+  
